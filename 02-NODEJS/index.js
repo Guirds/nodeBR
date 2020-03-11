@@ -42,38 +42,71 @@ function getAdress() {
   })
 }
 
-const UserPromise = getUser();
 
-UserPromise
-  .then(function (user) {
-    return getPhone()
-      .then(function resolvePhone(result) {
-        return {
-          user: {
-            nome: user.name,
-            id: user.id
-          },
-          phone: result
-        }
-      })
-  })
-  .then(function (result) {
-    return getAdress()
-      .then(function resolveAdress(res) {
-        return {
-          user: result.user,
-          phone: result.phone,
-          adress: res,
-        }
-      })
-  })
-  .then(function (result) {
-    console.log('Resultado:', result)
-  })
-  .catch(function (error) {
-    console.error('Deu ruim: ', error)
+main()
 
-  })
+async function main() {
+  try {
+    console.time('execucao-promise');
+    const user = await getUser();
+
+    // Execução promise em 5s
+    // const phone = await getPhone(user.id);
+    // const adress = await getAdress(user.id);
+
+    // Execução promise em 3s, as duas promises depende do usuario.
+    const result = await Promise.all([
+      getPhone(user.id),
+      getAdress(user.id),
+    ])
+    const adress = result[1];
+    const phone = result[0];
+    console.log(`
+      Nome: ${user.name},
+      Telefone: (${phone.ddd}) ${phone.phone},
+      Endereço: ${adress.street}, ${adress.number}
+    `)
+    console.timeEnd('execucao-promise');
+  } catch (error) {
+    console.error('Deu ruim', error);
+  }
+}
+
+
+
+// Promisse 
+// const UserPromise = getUser();
+
+// UserPromise
+//   .then(function (user) {
+//     return getPhone()
+//       .then(function resolvePhone(result) {
+//         return {
+//           user: {
+//             nome: user.name,
+//             id: user.id
+//           },
+//           phone: result
+//         }
+//       })
+//   })
+//   .then(function (result) {
+//     return getAdress()
+//       .then(function resolveAdress(res) {
+//         return {
+//           user: result.user,
+//           phone: result.phone,
+//           adress: res,
+//         }
+//       })
+//   })
+//   .then(function (result) {
+//     console.log('Resultado:', result)
+//   })
+//   .catch(function (error) {
+//     console.error('Deu ruim: ', error)
+
+//   })
 
 
 
