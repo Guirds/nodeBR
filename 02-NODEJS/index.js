@@ -4,9 +4,12 @@
  2 - Obter endereço do usuario pelo ID
 */
 
+//Import de módulo interno do node.js
+// const util = require('util');
+// const getAdressAsync = util.promisify(getAdress);
 
 function getUser() {
-  return new Promise(function resolvePromisse(resolve, reject) {
+  return new Promise(function resolvePromise(resolve, reject) {
     setTimeout(() => {
       return resolve({
         id: 1,
@@ -29,7 +32,7 @@ function getPhone() {
 }
 
 function getAdress() {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function resolvePromise(resolve, reject) {
     setTimeout(() => {
       return resolve({
         street: "Street of crazy",
@@ -43,7 +46,7 @@ const UserPromise = getUser();
 
 UserPromise
   .then(function (user) {
-    return getPhone(user.id)
+    return getPhone()
       .then(function resolvePhone(result) {
         return {
           user: {
@@ -55,9 +58,21 @@ UserPromise
       })
   })
   .then(function (result) {
-    console.log('Resultado: ', result)
-  }).catch(function (error) {
+    return getAdress()
+      .then(function resolveAdress(res) {
+        return {
+          user: result.user,
+          phone: result.phone,
+          adress: res,
+        }
+      })
+  })
+  .then(function (result) {
+    console.log('Resultado:', result)
+  })
+  .catch(function (error) {
     console.error('Deu ruim: ', error)
+
   })
 
 
